@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html class="x-admin-sm">
+
+<head>
+  <meta charset="UTF-8">
+  <title>欢迎页面</title>
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport"
+    content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi" />
+  <link rel="stylesheet" href="__STATIC__/css/font.css">
+  <link rel="stylesheet" href="__STATIC__/css/xadmin.css">
+  <script type="text/javascript" src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+  <script type="text/javascript" src="__STATIC__/lib/layui/layui.js" charset="utf-8"></script>
+  <script type="text/javascript" src="__STATIC__/js/xadmin.js"></script>
+  <script type="text/javascript" src="__STATIC__/js/cookie.js"></script>
+  <style>
+    .layui-form-item{
+      width: 50%;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="x-body">
+    <form class="layui-form">
+      <input type="hidden" name="id" value="{$data.id}">
+      <div class="layui-form-item">
+        <label class="layui-form-label">标题</label>
+        <div class="layui-input-block">
+          <input type="text" class="layui-input" name="title" value="{$data.title}">
+        </div>
+      </div>
+      <div class="layui-form-item">
+        <label class="layui-form-label">排序</label>
+        <div class="layui-input-block">
+          <input type="text" class="layui-input" name="ord" value="{$data.ord}">
+        </div>
+      </div>
+      <div class="layui-form-item">
+        <label class="layui-form-label">课程</label>
+        <div class="layui-input-block">
+          <select name="c_id">
+            <option value="0"></option>
+            {volist name="category" id="vo"}
+            <option value="{$vo.id}" <?php if($data['c_id']==$vo['id']){echo 'selected';}?>>{$vo.title}</option>
+            {/volist}
+          </select>
+        </div>
+      </div>
+      <div class="layui-form-item">
+        <label class="layui-form-label">类型</label>
+        <div class="layui-input-block">
+          <input type="text" class="layui-input" name="type" value="{$data.type}">
+        </div>
+      </div>
+      <div class="layui-form-item">
+        <label class="layui-form-label">链接</label>
+        <div class="layui-input-block">
+          <input type="text" class="layui-input" name="url" value="{$data.url}">
+        </div>
+      </div>
+      <div class="layui-form-item">
+        <label class="layui-form-label">图片地址</label>
+        <div class="layui-input-block">
+          <input type="text" class="layui-input" name="img" value="{$data.img}">
+        </div>
+      </div>
+      <div class="layui-form-item">
+        <div class="layui-input-block">
+          <button class="layui-btn layui-btn-sm" onclick="return false;" id="upload_img">
+            <i class="layui-icon">&#xe67c;</i>上传图片
+          </button>
+          <img id="pre_img" style="height: 100px;" src="{$data.img}" />
+          <!-- <input type="hidden" name="img" value="{$data.img}"> -->
+        </div>
+      </div>
+    </form>
+    <hr />
+    <div class="layui-form-item">
+      <div class="layui-input-block">
+        <button class="layui-btn" onclick="save()">保存</button>
+      </div>
+    </div>
+  </div>
+  <script type="text/javascript">
+    layui.use(['layer', 'upload'], function () {
+      layer = layui.layer;
+      upload = layui.upload;
+      $ = layui.jquery;
+
+      // 上传图片
+      upload.render({
+        elem: '#upload_img',
+        url: '/admin.php/content/upload_file',
+        accept:'file',
+        done: function(res){
+          //上传完毕回调
+          layer.msg(res.msg, { 'icon': 1 });
+          $('#pre_img').attr('src',res.data);
+          $('input[name="img"]').val(res.data);
+        },
+        error: function(){
+          //请求异常回调
+          layer.msg('文件获取失败', { 'icon': 2 });
+        }
+      });
+    });
+
+
+    function save() {
+      var title = $.trim($('input[name="title"]').val());
+      var url = $.trim($('input[name="url"]').val());
+      var img = $.trim($('input[name="img"]').val());
+      var c_id = $('select[name="c_id"]').val();
+      if (title == '') {
+        layer.msg('请输入标题', { 'icon': 2, 'anim': 6 });
+        return;
+      }
+      if (url = '') {
+        layer.msg('请输入URL', { 'icon': 2, 'anim': 6 });
+        return;
+      }
+      if (img = '') {
+        layer.msg('请上传图片', { 'icon': 2, 'anim': 6 });
+        return;
+      }
+      if (c_id == 0) {
+        layer.msg('请选择课程', { 'icon': 2, 'anim': 6 });
+        return;
+      }
+
+      $.post('/admin.php/slide/save', $('form').serialize(), function (res) {
+        if (res.code > 0) {
+          layer.msg(res.msg, { 'icon': 2, 'anim': 6 });
+        } else {
+          layer.msg(res.msg, { 'icon': 1 });
+          setTimeout(function () { parent.window.location.reload(); }, 1000);
+        }
+      }, 'json');
+    }
+  </script>
+</body>
+
+</html>

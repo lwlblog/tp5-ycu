@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html class="x-admin-sm">
+
+<head>
+  <meta charset="UTF-8">
+  <title>管理员列表</title>
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi" />
+  <link rel="stylesheet" href="__STATIC__/css/font.css">
+  <link rel="stylesheet" href="__STATIC__/css/xadmin.css">
+  <script type="text/javascript" src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+  <script type="text/javascript" src="__STATIC__/lib/layui/layui.js" charset="utf-8"></script>
+  <script type="text/javascript" src="__STATIC__/js/xadmin.js"></script>
+  <script type="text/javascript" src="__STATIC__/js/cookie.js"></script>
+</head>
+
+<body>
+  <div class="x-nav">
+    <span class="layui-breadcrumb">
+      <a href="">首页</a>
+      <a href="">演示</a>
+      <a>
+        <cite>管理员列表</cite>
+      </a>
+    </span>
+    <a class="layui-btn layui-btn-small" style="margin-top:3px;float:right" href="javascript:location.replace(location.href);">
+      刷新
+    </a>
+  </div>
+  <div class="x-body">
+    <div class="layui-form-item">
+      <div class="layui-input-inline">
+        <input type="text" class="layui-input" value="{$data.wd}" id="wd" placeholder="请输入内容标题搜索">
+      </div>
+      <button class="layui-btn layui-btn-small" onclick="searchs()"><i class="layui-icon">&#xe615;</i>搜索</button>
+    </div>
+    <xblock>
+      <button class="layui-btn" onclick="x_admin_show('添加管理员','/admin.php/Content/add')">
+        <i class="layui-icon"></i>添加
+      </button>
+      <span class="x-right" style="line-height:32px">共有&nbsp;<span style="color: #FF5722;font-weight: bold;">{$data.lists.total}</span>&nbsp;条数据</span>
+    </xblock>
+    <table class="layui-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>课程</th>
+          <th>分类</th>
+          <th>子类</th>
+          <th>标题</th>
+          <th>作者</th>
+          <th>点击量</th>
+          <th>状态</th>
+          <th>添加时间</th>
+          <th>操作</th>
+      </thead>
+      <tbody>
+        {volist name="data.lists.lists" id="vo"}
+        <tr>
+          <td>{$vo.id}</td>
+          <td>{:isset($data['category'][$vo.course_id])?$data['category'][$vo.course_id]['title']:''}</td>
+          <td>{:isset($data['category'][$vo.cat_id])?$data['category'][$vo.cat_id]['title']:''}</td>
+          <td>{:isset($data['category'][$vo.sub_id])?$data['category'][$vo.sub_id]['title']:''}</td>
+          <td style="max-width: 250px;">{$vo.title}</td>
+          <td>{$vo.author}</td>
+          <td>{$vo.pv}</td>
+          <td>{$vo.status==0?'<span style="color:red">下线</span>':'正常'}</td>
+          <td>{:date('Y-m-d H:i:s',$vo.add_time)}</td>
+          <td>
+            <button class="layui-btn layui-btn-warm layui-btn-xs" onclick="x_admin_show('编辑管理员','/admin.php/Content/add?id='+{$vo.id})">编辑</button>
+            <button class="layui-btn layui-btn-danger layui-btn-xs" onclick="del({$vo.id})">删除</button>
+          </td>
+        </tr>
+        {/volist}
+      </tbody>
+    </table>
+    <div id="pages" style="width: fit-content;margin: 0 auto;"></div>
+  </div>
+  <script>
+    layui.use(['layer','laypage'],function(){
+			layer = layui.layer;
+      $ = layui.jquery;
+      laypage = layui.laypage;
+      
+      // 分页
+      laypage.render({
+        elem: 'pages',
+        count:{$data.lists.total},
+        limit:{$data.pageSize},
+        curr:{$data.page},
+        jump: function(obj, first){
+			    if(!first){
+            searchs(obj.curr);
+			    }
+			  }
+			});
+		});
+
+    // 删除
+		function del(id){
+			layer.confirm('确定要删除吗？', {
+        icon:3,
+			  btn: ['确定','取消']
+			}, function(){
+			  $.post('/admin.php/Content/delete',{'id':id},function(res){
+			  	if(res.code>0){
+			  		layer.alert(res.msg,{icon:2});
+			  	}else{
+			  		layer.msg(res.msg);
+			  		setTimeout(function(){window.location.reload();},1000);
+			  	}
+			  },'json');
+			});
+    }
+    
+    // 搜索
+		function searchs(curpage){
+			var wd = $.trim($('#wd').val());
+			var url = "/admin.php/content/index?page="+curpage;
+			if(wd){
+				url += '&wd='+wd;
+			}
+			window.location.href = url;
+		}
+  </script>
+</body>
+
+</html>

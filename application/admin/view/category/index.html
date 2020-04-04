@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html class="x-admin-sm">
+  
+  <head>
+    <meta charset="UTF-8">
+    <title>课程导航管理</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi" />
+    <link rel="stylesheet" href="__STATIC__/css/font.css">
+    <link rel="stylesheet" href="__STATIC__/css/xadmin.css">
+    <script type="text/javascript" src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+    <script type="text/javascript" src="__STATIC__/lib/layui/layui.js" charset="utf-8"></script>
+    <script type="text/javascript" src="__STATIC__/js/xadmin.js"></script>
+    <script type="text/javascript" src="__STATIC__/js/cookie.js"></script>
+  </head>
+  
+  <body>
+    <div class="x-nav">
+      <span class="layui-breadcrumb">
+        <a href="">首页</a>
+        <a href="">演示</a>
+        <a><cite>菜单管理</cite></a>
+      </span>
+      <span style="margin-top:3px;float:right">
+        {if condition="$pid>0"}
+          <a class="layui-btn layui-btn-small" href="/admin.php/Category/index?pid={$backid}">返回</a>
+        {/if}
+        <a class="layui-btn layui-btn-small" href="javascript:location.replace(location.href);">刷新</a>
+      </span>
+    </div>
+    <div class="x-body">
+      <form class="layui-form">
+        <input type="hidden" name="pid" value="{$pid}">
+        <table class="layui-table layui-form">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>排序</th>
+              <th>课程分类名称</th>
+              <th>是否首页展示</th>
+              <th>是否作为导航</th>
+              <th>是否禁用</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            {volist name="data.lists" id="vo"}
+            <tr>
+              <td>{$vo.id}</td>
+              <td><input type="text" class="layui-input" name="ords[{$vo.id}]" value="{$vo.ord}"></td>
+              <td><input type="text" class="layui-input" name="titles[{$vo.id}]" value="{$vo.title}"></td>
+              <td><input type="checkbox" lay-skin="primary" name="is_index[{$vo.id}]" title="启用" {$vo.is_index?'checked':''} value=1></td>
+              <td><input type="checkbox" lay-skin="primary" name="is_nav[{$vo.id}]" title="启用" {$vo.is_nav?'checked':''} value=1></td>
+              <td><input type="checkbox" lay-skin="primary" name="status[{$vo.id}]" title="禁用" {$vo.status?'checked':''} value=1></td>
+              <td><button class="layui-btn layui-btn-xs" onclick="child({$vo.id});return false;">子类</button></td>
+            </tr>
+            {/volist}
+            <tr>
+              <td></td>
+              <td><input type="text" class="layui-input" name="ords[0]"></td>
+              <td><input type="text" class="layui-input" name="titles[0]"></td>
+              <td><input type="checkbox" lay-skin="primary" name="is_index[0]" title="启用" value=1></td>
+              <td><input type="checkbox" lay-skin="primary" name="is_nav[0]" title="启用" value=1></td>
+              <td><input type="checkbox" lay-skin="primary" name="status[0]" title="禁用" value=1></td>
+              <td></td>
+            </tr>
+          </tbody>
+        </table>
+      </form>
+      <button class="layui-btn" onclick="save()">保存</button>
+    </div>
+    <script>
+      layui.use(['layer','form'],function(){
+        $ = layui.jquery;
+        layer = layui.layer;
+        form = layui.form;
+      });
+
+      // 子菜单
+      function child(pid){
+        window.location.href="/admin.php/Category/index?pid="+pid;
+      }
+
+      // 保存
+      function save(){
+        console.log(1)
+        $.post('/admin.php/Category/save',$('form').serialize(),function(res){
+          if(res.code>0){
+            layer.alert(res.msg,{'icon':2});
+          }else{
+            layer.msg(res.msg,{'icon':1});
+            setTimeout(function(){window.location.reload();},1000);
+          }
+        },'json');
+      }
+    </script>
+  </body>
+
+</html>

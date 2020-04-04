@@ -1,0 +1,53 @@
+<?php
+namespace app\admin\controller;
+use think\Controller;
+use Util\data\Sysdb;
+
+class Account extends Controller
+{
+  public function login()
+  {
+    return $this->fetch();
+  }
+
+  // 管理员登录
+  public function dologin(){
+    $username = trim(input('post.username'));
+    $password = trim(input('post.password'));
+    $captcha = trim(input('post.captcha'));
+
+    if($username == ''){
+			exit(json_encode(array('code'=>1,'msg'=>'用户名不能为空')));
+		}
+		if($password == ''){
+			exit(json_encode(array('code'=>1,'msg'=>'密码不能为空')));
+		}
+		if($captcha == ''){
+			exit(json_encode(array('code'=>1,'msg'=>'请输入验证码')));
+    }
+    // 验证验证码
+		if(!captcha_check($captcha)){
+			exit(json_encode(array('code'=>1,'msg'=>'验证码错误')));
+    }
+    // 验证用户
+		$this->db = new Sysdb;
+		$admin = $this->db->table('admins')->where(array('username'=>$username))->item();
+    if(!$admin){
+			exit(json_encode(array('code'=>1,'msg'=>'用户不存在')));
+		}
+		if(md5($admin['username'].$password) != $admin['password']){
+			exit(json_encode(array('code'=>1,'msg'=>'密码错误')));
+		}
+		if($admin['status'] == 1){
+			exit(json_encode(array('code'=>1,'msg'=>'用户已被禁用')));
+		}
+    // 设置用户session
+		session('admin',$admin);
+		exit(json_encode(array('code'=>0,'msg'=>'登录成功')));
+	}
+	
+	public function logout(){
+		session('admin',null);
+		exit(json_encode(array('code'=>0,'msg'=>'退出成功')));
+	}
+}

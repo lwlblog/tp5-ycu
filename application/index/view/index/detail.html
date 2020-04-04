@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="zh_CN">
+
+<head>
+  {include file="public/meta"}
+  <style>
+    hr{
+      background-color: #aaa;
+    }
+    .content{
+      margin: 15px auto;
+      display: flex;
+    }
+    .content .layui-nav{
+      width: 240px;
+      min-height: 411px;
+    }
+    .right_info{
+      flex: 1;
+      margin-left: 15px;
+    }
+    .right_info>h2{
+      font-size: 1.2em;
+      height: 45px;
+      line-height: 45px;
+      background-color: #ddd;
+    }
+    .right_info>h2 .title{
+      color: #fff;
+      display: inline-block;
+      padding: 0 20px;
+      background-color: #393D49;
+    }
+    .right_info>h2 .layui-breadcrumb{
+      float: right;
+      margin-right: 10px;
+    }
+    .right_con{
+      padding: 0 10px;
+    }
+    .right_con .con_item{
+      margin-top: 10px;
+    }
+    .right_con h2{
+      font-size: 1.2em;
+      font-weight: 600;
+    }
+    .right_con .title{
+      padding: 0 10px;
+      color: #555;
+    }
+    .right_con .more{
+      font-size: .8em;
+      float: right;
+      margin-right: 10px;
+    }
+    .con_info li {
+      line-height: 2.5em;
+      border-bottom: 1px dashed #ccc;
+    }
+
+    .con_info li a {
+      color: #666;
+      display: inline-block;
+      transition: .5s;
+    }
+
+    .con_info li a:hover {
+      color: #01AAED;
+      transform: translateX(5px);
+    }
+
+    .con_info li span {
+      float: right;
+    }
+
+    /* 内容显示区域 */
+    .right_con_title,.right_con_info{
+      margin-top: 10px;
+      line-height: 1.5em;
+      text-align: center;
+    }
+    .right_con_info{
+      margin-bottom: 10px;
+      line-height: 2.5em;
+      background-color: #e6e6e6;
+    }
+    .right_con_info span{
+      margin: 0 20px;
+    }
+    #content{
+      background-color: #eee !important;
+    }
+    iframe{
+      border: none;
+    }
+  </style>
+</head>
+
+<body class="layui-bg-gray">
+  {include file="public/header"}
+  <!-- 内容部分 -->
+  <div class="content layui-container layui-row">
+    <ul class="layui-nav layui-nav-tree" lay-filter="test">
+      {if isset($data['children'])}
+      <li class="layui-nav-item layui-nav-itemed">
+        <a href="javascript:;">实践教学</a>
+        <dl class="layui-nav-child">
+          {volist name="data.children" id="vo"}
+          <dd><a href="/index/index/detail?cid={$cid}&gid={$gid}&sid={$vo.id}">{$vo.title}</a></dd>
+          {/volist}
+        </dl>
+      </li>
+      {/if}
+      <li class="layui-nav-item layui-nav-itemed">
+        <a href="javascript:;">点击排行</a>
+        <dl class="layui-nav-child">
+          {volist name="pv_list" id="vo"}
+          <dd><a href="/index/index/detail?cid={$cid}&gid={$vo.cat_id}&n={$vo.id}">{$vo.title}</a></dd>
+          {/volist}
+        </dl>
+      </li>
+    </ul>
+    <div class="right_info">
+      <h2>
+        <span class="title">{$data.title}</span>
+        <span class="layui-breadcrumb">
+          <a href="/index/index/index?cid={$cid}">首页</a>
+          <a><cite>{$data.title}</cite></a>
+        </span>
+      </h2>
+      <!-- 展示内容信息 -->
+      {if $n>0}
+      <div id="content_item" class="right_con">
+        <h2 class="right_con_title">{$item.title}</h2>
+        <p class="right_con_info">
+          <span>发布时间：{:date('Y-m-d H:i:s',$item.add_time)}</span>
+          <span>作者：{$item.author}</span>
+          <span>浏览次数：{$item.pv}</span>
+        </p>
+        <div id="content"></div>
+      </div>
+      {else /}
+      <div id="content_list" class="right_con">
+        <!-- 有分类 -->
+        {if isset($data['children'])}
+          <!-- 有sid -->
+          {if $sid>0}
+          <div class="con_item">
+            <ul class="con_info">
+              {volist name="data['children'][$sid]['content']" id="con"}
+              <li>
+                <i class="layui-icon">&#xe602;</i>
+                <a href="/index/index/detail?cid={$cid}&gid={$gid}&n={$con.id}">{$con.title}</a>
+                <span>{:date('Y-m-d H:i:s',$con.add_time)}</span>
+              </li>
+              {/volist}
+            </ul>
+          </div>
+          <!-- 没有sid -->
+          {else /}
+          {volist name="data.children" id="vo"}
+          <div class="con_item">
+            <h2>
+              <span class="title">{$vo.title}</span>
+              <a href="/index/index/detail?cid={$cid}&gid={$gid}&sid={$vo.id}" class="more">更多 >></a>
+            </h2>
+            <hr />
+            <ul class="con_info">
+              {volist name="vo.content" id="con"}
+              <li>
+                <i class="layui-icon">&#xe602;</i>
+                <a href="/index/index/detail?cid={$cid}&gid={$gid}&n={$con.id}">{$con.title}</a>
+                <span>{:date('Y-m-d H:i:s',$con.add_time)}</span>
+              </li>
+              {/volist}
+            </ul>
+          </div>
+          {/volist}
+          {/if}
+        {/if}
+        <!-- 无分类 -->
+        {if !isset($data['children'])}
+        <div class="con_item">
+          <ul class="con_info">
+            {volist name="data.content" id="con"}
+            <li>
+              <i class="layui-icon">&#xe602;</i>
+              <a href="/index/index/detail?cid={$cid}&gid={$gid}&n={$con.id}">{$con.title}</a>
+              <span>{:date('Y-m-d H:i:s',$con.add_time)}</span>
+            </li>
+            {/volist}
+          </ul>
+        </div>
+        {/if}
+      </div>
+      {/if}
+    </div>
+  </div>
+
+  {include file="public/footer"}
+
+  <script>
+    $(function(){
+      if('{$desc}' !== ''){
+        $('.right_con').html('<div id="content"></div>');
+        $('.right_con #content').media({
+          width: '100%',
+          // height: 800,
+          autoplay: true,
+          src: '{$desc}'
+        });
+      }
+      // 内容
+      if({$n}>0){
+        console.log({$n})
+        $('.right_con #content').media({
+          width: '100%',
+          height: 800,
+          autoplay: true,
+          src: '{$item.url}'
+        });
+        // 点击量
+        $.get('/index/index/pv?id='+{$n},'json');
+      }
+    })
+    layui.use('element', function(){
+      var element = layui.element;
+    });
+  </script>
+</body>
+
+</html>

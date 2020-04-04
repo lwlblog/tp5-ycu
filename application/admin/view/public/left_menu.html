@@ -1,0 +1,28 @@
+<!-- 左侧菜单开始 -->
+<div class="left-nav">
+  <div id="side-nav">
+    <ul id="nav">
+      {volist name="menus" id="vo"}
+      <li>
+        <a href="javascript:;">
+          <i class="iconfont">&#{$vo.icon};</i>
+          <cite>{$vo.title}</cite>
+          <i class="iconfont nav_right">&#xe697;</i>
+        </a>
+        <?php if(isset($vo['children']) && $vo['children']){?>
+        <ul class="sub-menu">
+          {volist name="vo.children" id="cvo"}
+          <li>
+            <a _href="/admin.php//{$cvo.controller}/{$cvo.method}">
+              <i class="iconfont">&#xe6a7;</i>
+              <cite>{$cvo.title}</cite>
+            </a>
+          </li>
+          {/volist}
+        </ul>
+        <?php }?>
+      </li>
+      {/volist}
+    </ul>
+  </div>
+</div>

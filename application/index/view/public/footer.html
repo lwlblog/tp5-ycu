@@ -1,0 +1,17 @@
+<!-- 底部 -->
+<div class="footer layui-bg-black">
+  <p>
+    <span>课程导航：</span>
+    {volist name="course" id="vo"}
+    <a href="/index/index/index?cid={$vo.id}" target="_blank">{$vo.title}</a>
+    {/volist}
+    <a href="/admin/home/index" target="_blank">后台管理</a>
+  </p>
+  <p>Copyright ©2020 liwenlong All Rights Reserved</p>
+  <p>李文龙（2016100342）</p>
+</div>
+
+<script type="text/javascript" src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+<script type="text/javascript" src="__LAYUI__/layui.js"></script>
+<script type="text/javascript" src="/static/index/js/jquery.imgscroll.js"></script>
+<script src="__STATIC__/js/jquery.media.js"></script>

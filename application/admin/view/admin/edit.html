@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html class="x-admin-sm">
+
+<head>
+  <meta charset="UTF-8">
+  <title>欢迎页面</title>
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport"
+    content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi" />
+  <link rel="stylesheet" href="__STATIC__/css/font.css">
+  <link rel="stylesheet" href="__STATIC__/css/xadmin.css">
+  <script type="text/javascript" src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+  <script type="text/javascript" src="__STATIC__/lib/layui/layui.js" charset="utf-8"></script>
+  <script type="text/javascript" src="__STATIC__/js/xadmin.js"></script>
+  <script type="text/javascript" src="__STATIC__/js/cookie.js"></script>
+</head>
+
+<body>
+  <div class="x-body">
+    <form class="layui-form">
+      <div class="layui-form-item">
+        <input type="hidden" name="id" value="{$data.item.id}">
+        <label class="layui-form-label">用户名</label>
+        <div class="layui-input-inline">
+          <input type="text" class="layui-input" name="username" value="{$data.item.username}" readonly>
+        </div>
+      </div>
+
+      <div class="layui-form-item">
+        <label class="layui-form-label">原密码</label>
+        <div class="layui-input-inline">
+          <input type="password" class="layui-input" name="old_pwd">
+        </div>
+      </div>
+
+      <div class="layui-form-item">
+        <label class="layui-form-label">新密码</label>
+        <div class="layui-input-inline">
+          <input type="password" class="layui-input" name="new_pwd">
+        </div>
+      </div>
+
+      <div class="layui-form-item">
+        <label class="layui-form-label">确认密码</label>
+        <div class="layui-input-inline">
+          <input type="password" class="layui-input" name="pwd">
+        </div>
+      </div>
+
+      <div class="layui-form-item">
+        <label class="layui-form-label">真实姓名</label>
+        <div class="layui-input-inline">
+          <input type="text" class="layui-input" name="truename" value="{$data.item.truename}">
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="layui-form-item">
+    <div class="layui-input-block">
+      <button class="layui-btn" onclick="save()">保存</button>
+    </div>
+  </div>
+
+  <script>
+    layui.use(['form', 'layer'], function () {
+      $ = layui.jquery,
+        form = layui.form,
+        layer = layui.layer;
+    });
+    // 保存管理员
+    function save() {
+      var id = parseInt($('input[name="id"]').val());
+      var old_pwd = $.trim($('input[name="old_pwd"]').val());
+      var new_pwd = $.trim($('input[name="new_pwd"]').val());
+      var pwd = $.trim($('input[name="pwd"]').val());
+      var truename = $.trim($('input[name="truename"]').val());
+
+      if (old_pwd == '') {
+        layer.alert('请输入原密码', { icon: 2 });
+        return;
+      }
+      if (new_pwd == '') {
+        layer.alert('请输入新密码', { icon: 2 });
+        return;
+      }
+      if (pwd == '') {
+        layer.alert('请输入确认密码', { icon: 2 });
+        return;
+      }
+      if (truename == '') {
+        layer.alert('请输入真实姓名', { icon: 2 });
+        return;
+      }
+      if(new_pwd !== pwd) {
+        layer.alert('两次密码不一致', { icon: 2 });
+        return;
+      }
+
+      $.post('/admin.php/Admin/update', $('form').serialize(), function (res) {
+        if (res.code > 0) {
+          layer.alert(res.msg, { icon: 2 });
+        } else {
+          layer.msg(res.msg);
+          setTimeout(function () { parent.window.location.reload(); }, 1000);
+        }
+      }, 'json');
+    }
+  </script>
+</body>
+
+</html>

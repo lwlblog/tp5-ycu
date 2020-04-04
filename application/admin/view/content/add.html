@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html class="x-admin-sm">
+
+<head>
+  <meta charset="UTF-8">
+  <title>欢迎页面</title>
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport"
+    content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi" />
+  <link rel="stylesheet" href="__STATIC__/css/font.css">
+  <link rel="stylesheet" href="__STATIC__/css/xadmin.css">
+  <script type="text/javascript" src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+  <script type="text/javascript" src="__STATIC__/lib/layui/layui.js" charset="utf-8"></script>
+  <script type="text/javascript" src="__STATIC__/js/xadmin.js"></script>
+  <script type="text/javascript" src="__STATIC__/js/cookie.js"></script>
+</head>
+
+<body>
+  <div class="x-body">
+    <form class="layui-form">
+      <input type="hidden" name="id" value="{$data.item.id}">
+      <div class="layui-form-item">
+        <label class="layui-form-label"><span style="color: #FF5722;">*</span>课程</label>
+        <div class="layui-input-inline">
+          <select name="course_id" data-sub="cat_id" lay-filter="category">
+            <option value="0"></option>
+            {volist name="data.course" id="vo"}
+            <option value="{$vo.id}" <?php if($data['item']['course_id']==$vo['id']){echo 'selected';}?>>{$vo.title}</option>
+            {/volist}
+          </select>
+        </div>
+
+        <label class="layui-form-label">分类</label>
+        <div class="layui-input-inline">
+          <select name="cat_id" data-sub="sub_id" lay-filter="category">
+          {if isset($data.cat_list)}
+            {volist name="data.cat_list" id="vo"}
+            <option value="{$vo.id}" <?php if($data['item']['cat_id']==$vo['id']){echo 'selected';}?>>{$vo.title}</option>
+            {/volist}
+          {/if}
+          </select>
+        </div>
+        <label class="layui-form-label">子类</label>
+        <div class="layui-input-inline">
+          <select name="sub_id">
+          {if isset($data.sub_list)}
+            {volist name="data.sub_list" id="vo"}
+            <option value="{$vo.id}" <?php if($data['item']['sub_id']==$vo['id']){echo 'selected';}?>>{$vo.title}</option>
+            {/volist}
+          {/if}
+          </select>
+        </div>
+      </div>
+      
+      <div class="layui-form-item">
+        <label class="layui-form-label"><span style="color: #FF5722;">*</span>标题</label>
+        <div class="layui-input-inline">
+          <input type="text" class="layui-input" name="title" value="{$data.item.title}">
+        </div>
+        <label class="layui-form-label">作者</label>
+        <div class="layui-input-inline">
+          <input type="text" class="layui-input" name="author" value="{$data.item.author}">
+        </div>
+        <label class="layui-form-label"><span style="color: #FF5722;">*</span>内容链接</label>
+        <div class="layui-input-inline">
+          <input type="text" class="layui-input" name="url" value="{$data.item.url}">
+        </div>
+      </div>
+
+      <div class="layui-form-item">
+        <label class="layui-form-label">描述</label>
+        <div class="layui-input-block" style="width: 810px;">
+          <input type="text" class="layui-input" name="desc" value="{$data.item.desc}">
+        </div>
+      </div>
+
+      <div class="layui-form-item">
+        <label class="layui-form-label">状态</label>
+        <div class="layui-input-inline">
+          <input type="checkbox" layui-skin="primary" name="status" title="发布" <?php if($data['item']['status']){echo 'checked';}?> value="1">
+        </div>
+        <label class="layui-form-label">&nbsp;</label>
+        <div class="layui-input-inline">
+          <button class="layui-btn layui-btn-sm" onclick="return false;" id="upload_img">
+            <i class="layui-icon">&#xe67c;</i>上传图片
+          </button>
+          <button class="layui-btn layui-btn-sm" onclick="return false;" id="upload_file">
+            <i class="layui-icon">&#xe67c;</i>上传文件
+          </button>
+        </div>
+        <div class="layui-input-inline">
+          <img id="pre_img" style="height: 100px;" src="{$data.item.img}" />
+          <input type="hidden" name="img" value="{$data.item.img}">
+        </div>
+      </div>
+    </form>
+    <hr />
+    <div class="layui-form-item">
+      <div class="layui-input-block">
+        <button class="layui-btn" onclick="save()">保存</button>
+      </div>
+    </div>
+  </div>
+  <script>
+    layui.use(['element', 'form', 'upload'], function () {
+      layer = layui.layer;
+      var element = layui.element;
+      var form = layui.form;
+      var upload = layui.upload;
+
+      // 获取分类
+      form.on('select(category)',  function (data) {
+        $.get('/admin.php/content/category?id=' + data.value, function (res) {
+          if (res.code > 0) {
+            layer.msg('分类信息获取失败', { 'icon': 2 });
+          } else {
+            // 获取data-sub值，为下一选项框的name名
+            var sub = $("select[name="+ $(data.elem).data('sub') +"]");
+            // 清除option
+            sub.html('<option value="0"></option>');
+            if(res.data){
+              res.data.forEach(item => {
+                sub.append('<option value=' + item.id + '>' + item.title + '</option>');
+              });
+            }else{
+              sub.html('');
+            }
+            // 重新渲染form表单
+            form.render();
+          }
+        }, 'json');
+      });
+      
+
+      // 上传图片
+      upload.render({
+        elem: '#upload_img',
+        url: '/admin.php/content/upload_file',
+        accept:'images',
+        done: function(res){
+          //上传完毕回调
+          layer.msg(res.msg, { 'icon': 1 });
+          $('#pre_img').attr('src',res.data);
+          $('input[name="img"]').val(res.data);
+        },
+        error: function(){
+          //请求异常回调
+          layer.msg('图片获取失败', { 'icon': 2 });
+        }
+      });
+
+      // 上传文件
+      upload.render({
+        elem: '#upload_file',
+        url: '/admin.php/content/upload_file',
+        accept:'file',
+        done: function(res){
+          //上传完毕回调
+          layer.msg(res.msg, { 'icon': 1 });
+          $("input[name='url']").val(res.data);
+        },
+        error: function(){
+          //请求异常回调
+          layer.msg('文件获取失败', { 'icon': 2 });
+        }
+      });
+    })
+
+    // 保存管理员
+    function save() {
+      var id = parseInt($('input[name="id"]').val());
+      var course_id = $('select[name="course_id"]').val();
+      var title = $.trim($('input[name="title"]').val());
+      var url = $.trim($('input[name="url"]').val());
+
+      if (course_id == 0) {
+        layer.alert('请选择课程', { icon: 2 });
+        return;
+      }
+      if (title == 0) {
+        layer.alert('请输入标题', { icon: 2 });
+        return;
+      }
+      if (url == '') {
+        layer.alert('请输入内容链接', { icon: 2 });
+        return;
+      }
+
+      $.post('/admin.php/Content/save', $('form').serialize(), function (res) {
+        if (res.code > 0) {
+          layer.alert(res.msg, { icon: 2 });
+        } else {
+          layer.msg(res.msg);
+          setTimeout(function () { parent.window.location.reload(); }, 1000);
+        }
+      }, 'json');
+    }
+  </script>
+</body>
+
+</html>

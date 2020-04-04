@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html class="x-admin-sm">
+  
+  <head>
+    <meta charset="UTF-8">
+    <title>菜单管理</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi" />
+    <link rel="stylesheet" href="__STATIC__/css/font.css">
+    <link rel="stylesheet" href="__STATIC__/css/xadmin.css">
+    <script type="text/javascript" src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+    <script type="text/javascript" src="__STATIC__/lib/layui/layui.js" charset="utf-8"></script>
+    <script type="text/javascript" src="__STATIC__/js/xadmin.js"></script>
+    <script type="text/javascript" src="__STATIC__/js/cookie.js"></script>
+  </head>
+  
+  <body>
+    <div class="x-nav">
+      <span class="layui-breadcrumb">
+        <a href="">首页</a>
+        <a href="">演示</a>
+        <a><cite>菜单管理</cite></a>
+      </span>
+      <span style="margin-top:3px;float:right">
+        {if condition="$pid>0"}
+          <a class="layui-btn layui-btn-small" href="/admin.php/Menu/index?pid={$backid}">返回</a>
+        {/if}
+        <a class="layui-btn layui-btn-small" href="javascript:location.replace(location.href);">刷新</a>
+      </span>
+    </div>
+    <div class="x-body">
+      <form class="layui-form">
+        <input type="hidden" name="pid" value="{$pid}">
+        <table class="layui-table layui-form">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>排序</th>
+              <th>菜单名称</th>
+              <th>控制器</th>
+              <th>方法</th>
+              <th>图标</th>
+              <th>是否隐藏</th>
+              <th>是否禁用</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            {volist name="data.lists" id="vo"}
+            <tr>
+              <td width="40">{$vo.mid}</td>
+              <td><input type="text" class="layui-input" name="ords[{$vo.mid}]" value="{$vo.ord}"></td>
+              <td><input type="text" class="layui-input" name="titles[{$vo.mid}]" value="{$vo.title}"></td>
+              <td><input type="text" class="layui-input" name="controllers[{$vo.mid}]" value="{$vo.controller}"></td>
+              <td><input type="text" class="layui-input" name="methods[{$vo.mid}]" value="{$vo.method}"></td>
+              <td><input type="text" class="layui-input" name="icons[{$vo.mid}]" value="{$vo.icon}"></td>
+              <td><input type="checkbox" lay-skin="primary" name="ishiddens[{$vo.mid}]" title="隐藏" {$vo.ishidden?'checked':''} value=1></td>
+              <td><input type="checkbox" lay-skin="primary" name="status[{$vo.mid}]" title="禁用" {$vo.status?'checked':''} value=1></td>
+              <td><button class="layui-btn layui-btn-xs" onclick="child({$vo.mid});return false;">子菜单</button></td>
+            </tr>
+            {/volist}
+            <tr>
+              <td></td>
+              <td><input type="text" class="layui-input" name="ords[0]"></td>
+              <td><input type="text" class="layui-input" name="titles[0]"></td>
+              <td><input type="text" class="layui-input" name="controllers[0]"></td>
+              <td><input type="text" class="layui-input" name="methods[0]"></td>
+              <td><input type="text" class="layui-input" name="icons[0]"></td>
+              <td><input type="checkbox" lay-skin="primary" name="ishiddens[0]" title="隐藏" value=1></td>
+              <td><input type="checkbox" lay-skin="primary" name="status[0]" title="禁用" value=1></td>
+              <td></td>
+            </tr>
+          </tbody>
+        </table>
+      </form>
+      <button class="layui-btn" onclick="save()">保存</button>
+    </div>
+    <script>
+      layui.use(['layer','form'],function(){
+        $ = layui.jquery;
+        layer = layui.layer;
+        form = layui.form;
+      });
+
+      // 子菜单
+      function child(pid){
+        window.location.href="/admin.php/Menu/index?pid="+pid;
+      }
+
+      // 保存
+      function save(){
+        $.post('/admin.php/menu/save',$('form').serialize(),function(res){
+          if(res.code>0){
+            layer.alert(res.msg,{'icon':2});
+          }else{
+            layer.msg(res.msg,{'icon':1});
+            setTimeout(function(){window.location.reload();},1000);
+          }
+        },'json');
+      }
+    </script>
+  </body>
+
+</html>

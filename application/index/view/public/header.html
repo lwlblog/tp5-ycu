@@ -1,0 +1,23 @@
+<!-- 头部导航部分 -->
+<div class="header layui-bg-black">
+  <h1 class="header_title layui-container">
+    <img class="logo_img" src="/static/index/img/logo.png" alt="">
+    <span>{$title}</span>
+  </h1>
+  <div class="nav layui-container">
+    <ul class="layui-nav" lay-filter="">
+      {if isset($gid)}
+      <li class="layui-nav-item"><a href="/index/index/index?cid={$cid}">网站首页</a></li>
+      {volist name="category" id="vo"}
+      <li class="layui-nav-item {$vo.id==$gid?'layui-this':''}"><a href="/index/index/detail?cid={$cid}&gid={$vo.id}">{$vo.title}</a></li>
+      {/volist}
+      
+      {else /}
+      <li class="layui-nav-item layui-this"><a href="/index/index/index?cid={$cid}">网站首页</a></li>
+      {volist name="category" id="vo"}
+      <li class="layui-nav-item"><a href="/index/index/detail?cid={$cid}&gid={$vo.id}">{$vo.title}</a></li>
+      {/volist}
+      {/if}
+    </ul>
+  </div>
+</div>

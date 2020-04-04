@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="zh_CN">
+
+<head>
+  {include file="public/meta"}
+  <style>
+    /* 内容部分 */
+    .swiper,
+    .content {
+      overflow: hidden;
+      margin-top: 10px;
+    }
+
+    .swiper img {
+      width: 100%;
+    }
+
+    .title {
+      font-size: 1.4em;
+      font-weight: 600;
+      padding: 15px 0;
+    }
+
+    .title>a {
+      float: right;
+      font-size: .6em;
+      margin-top: 6px;
+    }
+
+    .content>div {
+      height: 290px;
+      width: 50%;
+      float: left;
+    }
+
+    .content img {
+      width: 100%;
+    }
+
+    .content .left_con>div {
+      float: left;
+    }
+
+    .content .left_con {
+      overflow: hidden;
+    }
+
+    .content .left_con a {
+      float: right;
+      margin: 12px 20px 0 0;
+    }
+
+    .content .left_con_img {
+      width: 30%;
+      float: left;
+    }
+
+    .content .left_con_info {
+      width: 70%;
+      float: left;
+      text-indent: 2em;
+      line-height: 2em;
+      box-sizing: border-box;
+      padding: 0 20px;
+      margin: 0 auto;
+      display: -webkit-box;
+      overflow: hidden;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 7;
+    }
+
+    .content .right_con li {
+      width: 50%;
+      float: left;
+      box-sizing: border-box;
+    }
+
+    .content .right_con a {
+      display: block;
+      transition: .5s;
+    }
+
+    .content .right_con a:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 30px rgba(0, 0, 0, .1);
+    }
+
+    .content .right_con li:nth-child(odd) {
+      padding: 0 10px 20px 0;
+    }
+
+    .content .right_con li:nth-child(even) {
+      padding: 0 0 20px 10px;
+    }
+
+    /* 主体部分 */
+    .main {
+      margin-top: 10px;
+      padding: 15px;
+      overflow: hidden;
+      background-color: #fff;
+    }
+
+    .main .banner {
+      display: flex;
+    }
+
+    .main_con {
+      flex: 1;
+      padding-left: 25px;
+    }
+
+    .main_info li {
+      height: 30px;
+    }
+
+    .main_info li i{
+      float: left;
+    }
+
+    .main_info li a {
+      display: inline-block;
+      width: 200px;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      transition: .5s;
+    }
+
+    .main_info li a:hover {
+      color: #01AAED;
+      transform: translateX(5px);
+    }
+
+    .main_info li span {
+      float: right;
+    }
+
+    /* 课程团队 */
+    .team {
+      padding-bottom: 10px;
+    }
+
+    .team_con {
+      overflow: hidden;
+    }
+
+    .team_con li {
+      float: left;
+      padding: 0 5px;
+    }
+
+    .team_con img {
+      width: 270px;
+      height: 200px;
+    }
+
+    .team_con p {
+      text-align: center;
+      line-height: 2.5em;
+    }
+  </style>
+</head>
+
+<body class="layui-bg-gray">
+  {include file="public/header"}
+  <!-- 轮播图部分 -->
+  <div class="swiper layui-container">
+    <div class="layui-carousel" id="swiper">
+      <div carousel-item>
+        {volist name="data.swiper" id="vo"}
+        <div class="swiper_item">
+          <a href="{$vo.url}" target="_blank"><img src="{$vo.img}" alt="{$vo.title}"></a>
+        </div>
+        {/volist}
+      </div>
+    </div>
+  </div>
+  <!-- 内容部分 -->
+  <div class="content layui-container">
+    <div class="left_row">
+      <h2 class="title">课程简介</h2>
+      <div class="left_con">
+        <div class="left_con_img">
+          <img src="{$data.desc.img}" alt="">
+        </div>
+        <div class="left_con_info">{$data.desc.desc}</div>
+        <a href="{$data.desc.url}">阅读更多>></a>
+      </div>
+    </div>
+    <div class="right_row">
+      <h2 class="title">课程资源</h2>
+      <ul class="right_con">
+        {volist name="data.resource" id="vo"}
+        <li>
+          <a href="{$vo.url}"><img src="{$vo.img}" alt="{$vo.title}"></a>
+        </li>
+        {/volist}
+      </ul>
+    </div>
+  </div>
+  <!-- 主体部分 -->
+  <div class="main">
+    <div class="banner layui-container">
+      <div class="layui-carousel" id="banner">
+        <div carousel-item>
+          {volist name="data.main_swiper" id="vo"}
+          <div class="layui-bg-blue">
+            <a href="{$vo.url}"><img src="{$vo.img}" alt="{$vo.title}"></a>
+          </div>
+          {/volist}
+        </div>
+      </div>
+      {volist name="data.list" id="vo"}
+      <div class="main_con">
+        <h2 class="title">{$vo.title}<a href="">更多 >></a></h2>
+        <ul class="main_info">
+          {volist name="vo.content" id="con"}
+          <li>
+            <i class="layui-icon">&#xe602;</i>
+            <a href="/index/index/detail?gid={$vo.id}&n={$con.id}">{$con.title}</a>
+            <span>{:date('Y-m-d',$con.add_time)}</span>
+          </li>
+          {/volist}
+        </ul>
+      </div>
+      {/volist}
+    </div>
+  </div>
+  <!-- 课程团队 -->
+  <div class="team layui-container">
+    <h2 class="title">课程团队<a href="">更多 >></a></h2>
+    <div class="team_con">
+      <ul>
+        {volist name="data.team" id="vo"}
+        <li>
+          <a href="{$vo.url}"><img src="{$vo.img}" alt="{$vo.title}"></a>
+          <p class="name">{$vo.title}</p>
+        </li>
+        {/volist}
+      </ul>
+    </div>
+  </div>
+
+  {include file="public/footer"}
+
+  <script>
+    // $(window).resize(function () {
+    //   location.reload()
+    // });
+    $(function () {
+      $(".team_con").imgscroll({
+        speed: 50,    //图片滚动速度
+        amount: 0,    //图片滚动过渡时间
+        width: 1,     //图片滚动步数
+        dir: "left"   // "left" 或 "up" 向左或向上滚动
+      });
+    });
+
+    //注意：导航 依赖 element 模块，否则无法进行功能性操作
+    layui.use(['element', 'carousel'], function () {
+      var element = layui.element;
+      var carousel = layui.carousel;
+
+      var imgH = parseInt($('#swiper').width()) * 332 / 1200;
+      //建造实例
+      carousel.render({
+        elem: '#swiper'
+        , autoplay: true
+        , width: '100%' //设置容器宽度
+        , height: imgH
+        , interval: 5000
+        , arrow: 'hover' //始终显示箭头
+      });
+      carousel.render({
+        elem: '#banner'
+        , autoplay: true
+        , width: '442px' //设置容器宽度
+        , height: '285px'
+        , interval: 6000
+        , arrow: 'hover' //始终显示箭头
+      });
+    });
+  </script>
+</body>
+
+</html>
