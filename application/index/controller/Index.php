@@ -28,10 +28,10 @@ class Index extends Controller
 	
 	// 首页
 	public function index(){
-		$data['swiper'] = $this->db->table('slide')->where(array('type'=>0))->order('ord')->lists();
-		$data['resource'] = $this->db->table('slide')->where(array('type'=>1))->order('ord')->lists();
-		$data['main_swiper'] = $this->db->table('slide')->where(array('type'=>2))->order('ord')->lists();
-		$data['team'] = $this->db->table('slide')->where(array('type'=>3))->order('ord')->lists();
+		$data['swiper'] = $this->db->table('slide')->where(array('c_id'=>$this->cid, 'type'=>0))->order('ord')->lists();
+		$data['resource'] = $this->db->table('slide')->where(array('c_id'=>$this->cid, 'type'=>1))->order('ord')->lists();
+		$data['main_swiper'] = $this->db->table('slide')->where(array('c_id'=>$this->cid, 'type'=>2))->order('ord')->lists();
+		$data['team'] = $this->db->table('slide')->where(array('c_id'=>$this->cid, 'type'=>3))->order('ord')->lists();
 		$data['desc'] = $this->db->table('desc')->where(array('c_id'=>$this->cid))->item();
 
 		// 首页显示内容列表

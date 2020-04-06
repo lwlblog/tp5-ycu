@@ -58,8 +58,14 @@ class Content extends Base
 		// }
 		$getSaveName=str_replace("\\","/",$info->getSaveName());
 		$url = '/uploads/'.$getSaveName;
+
+		// 保存到数据库
+		$data['type'] = $ext;
+		$data['url'] = $url;
+		$data['add_time'] = time();
+		$this->db->table('file')->insert($data);
+
 		exit(json_encode(array('code'=>0,'msg'=>'上传成功','data'=>$url)));
-		dump($url);
 	}
 
   // 保存
