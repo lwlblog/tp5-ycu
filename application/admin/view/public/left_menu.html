@@ -13,7 +13,7 @@
         <ul class="sub-menu">
           {volist name="vo.children" id="cvo"}
           <li>
-            <a _href="/admin.php//{$cvo.controller}/{$cvo.method}">
+            <a _href="/admin.php/{$cvo.controller}/{$cvo.method}?m_id={$cvo.mid}">
               <i class="iconfont">&#xe6a7;</i>
               <cite>{$cvo.title}</cite>
             </a>

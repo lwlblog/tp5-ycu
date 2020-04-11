@@ -39,6 +39,13 @@ class Home extends Base
   // 欢迎页面
   public function welcome()
   {
+		$data['course'] = $this->db->table('category')->where(array('pid'=>0))->lists();
+		$data['admins'] = $this->db->table('admins')->lists();
+		$data['slide'] = $this->db->table('slide')->lists();
+		$data['file'] = $this->db->table('file')->lists();
+		$data['content'] = $this->db->table('content')->lists();
+		// dump(data($data['course']||[]));
+		$this->assign('data',$data);
     return $this -> fetch();
   }
 }
