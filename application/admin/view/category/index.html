@@ -3,10 +3,22 @@
   
   <head>
     {include file="public/head"}
+    <style>
+      #back{
+        position: absolute;
+        top: 3px;
+        right: 70px;
+        z-index: 100;
+      }
+    </style>
   </head>
   
   <body>
     {include file="public/breadcrumb"}
+    <!-- 返回上一级 -->
+    {if $pid>0}
+    <a id="back" href="/admin.php/Category/index?m_id={$menu_s.mid}&pid={$backid}" class="layui-btn">返回</a>
+    {/if}
     <div class="x-body">
       <form class="layui-form">
         <input type="hidden" name="pid" value="{$pid}">
